@@ -13,7 +13,6 @@ export const validUserData = (req: Request, res: Response, next: NextFunction) =
 }
 
 export const protectedRoute = (req: Request, res: Response, next: NextFunction) => {
-    console.log(req.role)
     if (req.role !== 'admin' && req.userId !== req.params.id) {
         res.status(401).json({ message: 'Access denied' });
         return

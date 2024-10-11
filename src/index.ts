@@ -22,7 +22,6 @@ app.use("/users", userRoute)
 
 io.on('connection', (socket) => {
     console.log('a user connected');
-    // console.log(socket)
 })
 
 app.get("/", (req, res) => {

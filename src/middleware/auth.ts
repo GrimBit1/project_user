@@ -9,7 +9,6 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
     };
     try {
         const decoded = jwt.verify(token, process.env.SECRET_KEY) as jwt.JwtPayload;
-        console.log(decoded)
         req.userId = decoded.userId;
         req.role = decoded.role;
         next();
