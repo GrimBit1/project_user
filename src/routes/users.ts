@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import { User } from '../db/users.js';
 import { protectedRoute, validUserData } from '../middleware/user.js';
 import verifyToken from '../middleware/auth.js';
+import { io } from '../index.js';
 
 const router = express.Router();
 
@@ -57,6 +58,7 @@ router.post('/create', validUserData, async (req: Request, res: Response) => {
         const newUser = new User({ name, email, password: hashedPassword, role });
         await newUser.save();
         res.status(201).json({ message: 'User created successfully', user: newUser });
+        io.emit('userCreated', { message: 'A new user has been created', newUser });
     } catch (error) {
         res.status(500).json({ message: 'Error creating user', error });
     }
@@ -109,6 +111,7 @@ router.delete('/:id', async (req: Request, res: Response) => {
             return
         }
         res.status(200).json({ message: 'User deleted successfully' });
+        io.emit('userDeleted', { message: 'A user has been deleted', deletedUser });
     } catch (error) {
         res.status(500).json({ message: 'Error deleting user', error });
     }
