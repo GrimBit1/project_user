@@ -7,13 +7,11 @@
   </head>
   <body>
     <script>
-      // Include the Socket.IO client library
       const script = document.createElement("script");
       script.src = "https://cdn.socket.io/4.0.0/socket.io.min.js";
       document.head.appendChild(script);
 
       script.onload = () => {
-        // Replace with your server URL
         const socket = io("http://localhost:3000");
 
         socket.on("connect", () => {
@@ -34,14 +32,6 @@
         socket.on("disconnect", () => {
           console.log("Disconnected from server");
         });
-
-        // Add any custom event listeners here
-        socket.on("yourCustomEvent", (data) => {
-          console.log("Received custom event:", data);
-        });
-
-        // Emit events to the server
-        socket.emit("yourCustomEvent", { message: "Hello, server!" });
       };
     </script>
   </body>
