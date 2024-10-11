@@ -1,4 +1,4 @@
-import express, { } from 'express';
+import express from 'express';
 import { createServer } from 'node:http';
 import mongoose from 'mongoose';
 import "dotenv/config"

@@ -8,29 +8,14 @@ import { io } from '../index.js';
 const router = express.Router();
 
 // User Middlewares to check token and role
-router.use(verifyToken, protectedRoute);
+router.use(verifyToken);
 
-
-router.get("/check", async (req, res) => {
+// Here we are using the protectedRoute middleware to check if the user is authenticated because if we set it to global then it will not get the params of the request
+router.get("/check", protectedRoute, async (req, res) => {
     res.status(200).json({ message: 'User is authenticated' });
 })
 
-
-
-router.post("/temp", async (req, res) => {
-    try {
-        const { name, email, password, role } = req.body;
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({ name, email, password: hashedPassword, role });
-        await newUser.save();
-        res.status(201).json({ message: 'User created successfully', user: newUser });
-    } catch (error) {
-        res.status(500).json({ message: 'Error creating user', error });
-    }
-})
-
-
-router.get("/search", async (req, res) => {
+router.get("/search", protectedRoute, async (req, res) => {
     try {
         const { page = 1, limit = 10, email, name } = req.query;
         const skip = (page as number - 1) * (limit as number)
@@ -50,7 +35,7 @@ router.get("/search", async (req, res) => {
 
 // Create User (POST /users)
 // This is for admin
-router.post('/create', validUserData, async (req: Request, res: Response) => {
+router.post('/create', protectedRoute, validUserData, async (req: Request, res: Response) => {
     try {
         const { name, email, password, role } = req.body;
 
@@ -68,7 +53,7 @@ router.post('/create', validUserData, async (req: Request, res: Response) => {
 
 // Get User by ID (GET /:id)
 // User | Admin
-router.get('/:id', async (req: Request, res: Response) => {
+router.get('/:id', protectedRoute, async (req: Request, res: Response) => {
     try {
         const user = await User.findById(req.params.id);
         if (!user) {
@@ -83,13 +68,14 @@ router.get('/:id', async (req: Request, res: Response) => {
 
 // Update User (PUT /:id)
 // User | Admin
-router.put('/:id', validUserData, async (req: Request, res: Response) => {
+router.put('/:id', protectedRoute, validUserData, async (req: Request, res: Response) => {
     try {
         const { name, email, password, role } = req.body;
         const updateData: any = { name, email, role };
         if (password) {
             updateData.password = await bcrypt.hash(password, 10);
         }
+
         const updatedUser = await User.findByIdAndUpdate(req.params.id, updateData, { new: true });
         if (!updatedUser) {
             res.status(404).json({ message: 'User not found' });
@@ -103,7 +89,7 @@ router.put('/:id', validUserData, async (req: Request, res: Response) => {
 
 // Delete User (DELETE /:id)
 // User | Admin
-router.delete('/:id', async (req: Request, res: Response) => {
+router.delete('/:id', protectedRoute, async (req: Request, res: Response) => {
     try {
         const deletedUser = await User.findByIdAndDelete(req.params.id);
         if (!deletedUser) {
