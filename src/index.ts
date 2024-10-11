@@ -6,8 +6,8 @@ import authRoute from './routes/auth.js';
 import userRoute from './routes/users.js';
 import cookieParser from 'cookie-parser'
 import { Server } from 'socket.io';
-import { dirname } from 'path'
-import e from 'express';
+import bcrypt from 'bcrypt'
+import { User } from './db/users.js';
 
 const app = express();
 const server = createServer(app)
@@ -28,6 +28,18 @@ io.on('connection', (socket) => {
 app.get("/", (req, res) => {
 
     res.sendFile("/home/aditya/Desktop/node/src/index.html")
+})
+
+app.post("/temp", async (req, res) => {
+    try {
+        const { name, email, password, role } = req.body;
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User({ name, email, password: hashedPassword, role });
+        await newUser.save();
+        res.status(201).json({ message: 'User created successfully', user: newUser });
+    } catch (error) {
+        res.status(500).json({ message: 'Error creating user', error });
+    }
 })
 
 server.listen(port, async () => {
