@@ -37,7 +37,7 @@ npm run watch
 To create an admin user without any restrictions, use the following endpoint:
 
 ```
-POST /users/temp
+POST /temp
 ```
 
 ## Step 5: Login and Get Token
